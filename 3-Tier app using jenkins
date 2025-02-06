@@ -1,0 +1,38 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('code') {
+            steps {
+                git 'https://github.com/mouli911/docker-webapp.git'
+            }
+        }
+        stage('build') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+        stage('docker app image') {
+            steps{
+                sh 'cp -r target Docker-app'
+                sh 'rm -rf Docker-app/multistage'
+                sh 'docker build -t app-image Docker-app'
+            }
+        }
+        stage('docker db image') {
+            steps {
+                sh 'docker build -t db-image Docker-db'
+            }
+        }
+        stage('doc-container db') {
+            steps {
+                sh 'docker run -d --name devops-db -p 3306:3306 db-image'
+            }
+        }
+        stage('doc-container mount app') {
+            steps {
+                sh 'docker run -itd --name app-cont -p 1111:8080 --link devops-db:MySQL app-image'
+            }
+        }
+    }
+}
