@@ -1,0 +1,14 @@
+## Before RQ we need to create one name space ##
+## kubectl create ns bank ##
+---
+apiVersion: v1
+kind: ResouceQuota
+metadata:
+  name: myrq
+  namespcae: bank
+spec:
+  hard:
+    limits.cpu: "200m"
+    requests.cpu: "150m"
+    limits.memory: "30Mi"
+    requests.memory: "12Mi"
