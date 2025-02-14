@@ -1,0 +1,20 @@
+---
+apiVersion: apps/v1
+kind: StateFulSet
+metadata:
+  name: mysf
+spec:
+  replicas: 4
+  slector:
+    matchLabels:
+      tier: db
+  template:
+    metadata:
+      labels:
+        tier: db
+    spec:
+      containers:
+        - name: cont1
+          image: httpd #(or) mysql
+          ports:
+            - containerPort: 80 #(or) 3306
