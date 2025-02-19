@@ -1,0 +1,31 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('code') {
+            steps {
+                git branch: 'main', url: 'https://github.com/mouli911/devops18.git'
+            }
+        }
+        stage('init'){
+            steps{
+                sh 'terraform init'
+            }
+        }
+        stage("plan"){
+            steps{
+                sh 'terraform plan' ## sh 'echo -e "yes/n" | terraform plan' ----> perform this command when we add s3 backend file
+            }
+        }
+        stage("apply"){
+            steps{
+                sh 'terraform apply --auto-approve'
+            }
+        }
+        stage("deploy"){
+            steps{
+                sh 'ansible-playbook -i /opt/ansible/inventory/aws_ec2.yml ansible/deployment.yml'
+            }
+        }
+    }
+}
