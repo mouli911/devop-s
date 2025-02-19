@@ -1,0 +1,36 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('code') {
+            steps {
+                git 'https://github.com/mouli911/ltibbhackathon.git'
+            }
+        }
+        stage('appimage'){
+            steps{
+                sh 'docker build -t myapp .'
+            }
+        }
+        stage('dbimage'){
+            steps{
+                sh 'docker build -t mydb database'
+            }
+        }
+        stage('volume'){
+            steps{
+                sh 'docker volume create mouli'
+            }
+        }
+        stage('dbcont'){
+            steps{
+                sh 'docker run -d --name mysqldb -v mouli:/mydb -p 3306:3306 mydb'
+            }
+        }
+        stage('appcont'){
+            steps{
+                sh 'docker run -itd --name myapp -p 1234:80 --link mysqldb:mysqlcon myapp'
+            }
+        }
+    }
+}
